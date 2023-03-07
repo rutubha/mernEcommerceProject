@@ -1,0 +1,73 @@
+import { Fragment, useEffect, useState } from "react";
+import Loader from "../layout/Loader/Loader";
+import { MailOutlined } from "@material-ui/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { clearErrors, forgotPassword } from "../../actions/userAction";
+import { useAlert } from "react-alert";
+import "./ForgotPassword.css";
+import MetaData from "../layout/MetaData";
+
+const ForgotPassword = () => {
+  const dispatch = useDispatch();
+  const alert = useAlert();
+
+  const { error, message, loading } = useSelector(
+    (state) => state.forgotPassword
+  );
+
+  const [email, setEmail] = useState("");
+
+  const forgotPasswordSubmit = (e) => {
+    e.preventDefault();
+    dispatch(forgotPassword(email));
+  };
+
+  useEffect(() => {
+    if (error) {
+      alert.error(error.error);
+      dispatch(clearErrors());
+    }
+    if (message) {
+      alert.success(message);
+    }
+  }, [dispatch, error, alert, message]);
+
+  return (
+    <Fragment>
+      {loading ? (
+        <Loader />
+      ) : (
+        <Fragment>
+          <MetaData title={`Forgot Password`} />
+          <div className="forgotPasswordContainer">
+            <div className="forgotPasswordBox">
+              <h2>Forgot Password</h2>
+              <form
+                className="forgotPasswordForm"
+                onSubmit={forgotPasswordSubmit}
+              >
+                <div className="forgotPasswordEmail">
+                  <MailOutlined />
+                  <input
+                    type="email"
+                    name="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <input
+                  type="submit"
+                  value="Update"
+                  className="forgotPasswordBtn"
+                />
+              </form>
+            </div>
+          </div>
+        </Fragment>
+      )}
+    </Fragment>
+  );
+};
+
+export default ForgotPassword;
